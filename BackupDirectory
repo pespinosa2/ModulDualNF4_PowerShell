@@ -1,0 +1,25 @@
+Busca un directori del que fara una copua de seguretat a una ruta que escrigui l'usuari , si no existeix auqesta ruta la crearà.
+# Exercici 2: Realitzar copies de seguretatd'un directori.
+
+# Creem les variables ...
+
+$DirectoriOrigen = Read-Host "Escriu el directori a fer còpia de seguretat"     # Ruta del directori a fer còpia de seguretat.
+$DirectoriDest = Read-Host "Escriu el directori de destinació per la còpia"     # Ruta del directori de destinació per la còpia.
+
+# Comprovarem que el directori d'origen si existeix.
+
+if ( -Not ( Test-Path -Path $DirectoriOrigen)) {
+    Write-Host "El directori d'origen especificat no existeix."
+    exit
+}
+
+# Comprovar si el directori de destinació existeix, si no, crear-lo
+if (-Not ( Test-Path $DirectoriDest )) {
+    New-Item -ItemType Directory -Path $DirectoriDest | Out-Null
+    Write-Host "El directori de destinació no existia, s'ha creat."
+}
+
+# Realitzar la còpia de seguretat
+Copy-Item -Path $DirectoriOrigen\* -Destination $DirectoriDest -Recurse -Force
+
+Write-Host "La còpia de seguretat s'ha completat correctament."
