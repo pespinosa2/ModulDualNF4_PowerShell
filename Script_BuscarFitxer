@@ -1,1 +1,25 @@
 Este script de PowerShell , buscara un nom de un fitxer o directori dintre de una ruta que existeixi al nostre sistema.
+
+# Exercici 1: Script per localitzar un fitxer o directori.
+
+# Sol·licitem les dades.
+
+$NomObjecte = Read-Host "Introdueix el nom del fitxer o directori que vols buscar"
+$Ruta = Read-Host "Introdueix la ruta on vols buscar"
+
+# Comprovació de que la ruta existeix.
+if (-Not (Test-Path -Path $Ruta)) {
+    Write-Host "La ruta especificada no existeix."
+    exit
+}
+
+# Cercar el fitxer / directori.
+$Resultat = Get-ChildItem -Path $Ruta -Recurse -Filter $NomObjecte -ErrorAction SilentlyContinue
+
+if ($Resultat) {
+    Write-Host "S'ha trobat el fitxer o directori:"
+    $Resultat | ForEach-Object { $_.FullName }
+} else {
+    Write-Host "No s'ha trobat cap fitxer o directori amb el nom '$NomObjecte' a la '$Ruta'."
+}
+
