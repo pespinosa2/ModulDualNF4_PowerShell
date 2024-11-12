@@ -1,0 +1,32 @@
+# Función para Desinstalar un Programa
+
+function DesinstalarPrograma {
+
+    # Solicitar el nombre del programa a desinstalar
+
+    $nomPrograma = Read-Host "Introduce el nombre del programa que deseas desinstalar"
+
+    # Buscar el programa en la lista de productos instalados
+
+    $programa = Get-WmiObject -Class Win32_Product | Where-Object { $_.Name -eq $nomPrograma }
+
+    # Verificar si el programa fue encontrado
+
+    if ($programa) {
+
+        # Desinstalar el programa
+
+        $programa.Uninstall() | Out-Null
+
+        Write-Output "$nomPrograma ha sido desinstalado correctamente."
+
+    } else {
+
+        Write-Output "No se ha encontrado el programa: $nomPrograma"
+
+    }
+}
+
+# Ejecución de la función
+
+DesinstalarPrograma
