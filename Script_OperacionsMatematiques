@@ -1,0 +1,58 @@
+# Funció de càlcul amb operacions matemàtiques
+
+function Calcu {
+
+
+    # Solicitar los parámetros al usuario.
+
+    $valor1 = [float](Read-Host "Introduce el primer número")
+    $valor2 = [float](Read-Host "Introduce el segundo número")
+    $operacio = Read-Host "Introduce la operación (+, -, * o /)"
+
+    # Inicializar variable para el resultado
+
+    $resultado = 0
+
+    # Realizar la operación según el operador ingresado
+
+
+    if ($operacio -eq "+") {
+
+        $resultado = $valor1 + $valor2
+
+    } elseif ($operacio -eq "-") {
+
+        $resultado = $valor1 - $valor2
+
+    } elseif ($operacio -eq "*") {
+
+        $resultado = $valor1 * $valor2
+
+    } elseif ($operacio -eq "/") {
+
+        if ($valor2 -ne 0) {
+
+            $resultado = $valor1 / $valor2
+
+        } else {
+
+            Write-Output "Error: La división por cero no está permitida."
+
+            return
+        }
+
+    } else {
+
+        Write-Output "Operación no válida. Usa +, -, * o /."
+
+        return
+    }
+
+    # Mostrar el resultado
+
+    Write-Output "Resultado: $resultado"
+}
+
+# Ejecución de la función
+
+Calcu
