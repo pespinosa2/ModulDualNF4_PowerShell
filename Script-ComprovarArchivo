@@ -1,0 +1,30 @@
+function ComprovarFitxer {
+
+    # Solicitar el nombre o ruta del archivo
+
+    $nomFitxer = Read-Host "Introduce el nombre o la ruta completa del archivo a verificar"
+
+    # Verificar si el archivo existe
+
+    if (Test-Path $nomFitxer) {
+
+        Write-Output "El archivo existe en la ruta especificada."
+
+    } else {
+
+        Write-Output "No se ha encontrado el archivo: $nomFitxer"
+    }
+
+    # Solicitar si se desea continuar o finalizar
+
+    $resposta = Read-Host "¿Deseas continuar? (sí/no)"
+
+    if ($resposta -eq "no") {
+
+        exit
+    }
+}
+
+# Ejecución de la función
+
+ComprovarFitxer
