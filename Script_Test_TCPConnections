@@ -1,0 +1,17 @@
+Function Test-TCPConnection {
+    # Bucle per verificar la connexió TCP
+    do {
+        $HostToTest = Read-Host "Introdueix el nom del host o IP que vols comprovar (exemple: google.com)"
+        try {
+            Test-Connection -ComputerName $HostToTest -Count 1 -ErrorAction Stop
+            [System.Windows.Forms.MessageBox]::Show("Connexió amb $HostToTest establerta correctament.", "Connexió TCP", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+            $ConnectionSuccess = $true
+        } catch {
+            Write-Host "No s'ha pogut establir la connexió. Comprova l'host o la teva xarxa i torna-ho a provar." -ForegroundColor Red
+            $ConnectionSuccess = $false
+        }
+    } while (-not $ConnectionSuccess)
+}
+
+# Executa el script
+Test-TCPConnection
