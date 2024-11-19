@@ -1,0 +1,45 @@
+Function Mount-And-Copy-Simple {
+    # Bucle per demanar el camí de l'ISO
+    do {
+        $IsoPath = Read-Host "Introdueix el camí complet del fitxer ISO"
+        try {
+            Mount-DiskImage -ImagePath $IsoPath -ErrorAction Stop
+            Write-Host "ISO muntada correctament."
+            $IsoMounted = $true
+        } catch {
+            Write-Host "No s'ha pogut muntar l'ISO. Comprova el camí i torna-ho a provar." -ForegroundColor Red
+            $IsoMounted = $false
+        }
+    } while (-not $IsoMounted)
+
+    # Obtenir la lletra del volum muntat
+    $DriveLetter = (Get-DiskImage -ImagePath $IsoPath | Get-Volume).DriveLetter + ":"
+    Write-Host "L'ISO està muntada a la unitat $DriveLetter."
+
+    # Bucle per demanar el fitxer i copiar-lo
+    do {
+        $FileToCopy = Read-Host "Escriu el nom del fitxer que vols copiar (exemple: fitxer.txt)"
+        $DestinationPath = Read-Host "Introdueix la ruta on vols copiar el fitxer"
+
+        $SourceFilePath = Join-Path -Path $DriveLetter -ChildPath $FileToCopy
+        try {
+            Copy-Item -Path $SourceFilePath -Destination $DestinationPath -Force -ErrorAction Stop
+            Write-Host "El fitxer $FileToCopy s'ha copiat a $DestinationPath correctament."
+            $CopySuccess = $true
+        } catch {
+            Write-Host "No s'ha pogut copiar el fitxer. Comprova el nom i la ruta, i torna-ho a provar." -ForegroundColor Red
+            $CopySuccess = $false
+        }
+    } while (-not $CopySuccess)
+
+    # Desmuntar l'ISO
+    try {
+        Dismount-DiskImage -ImagePath $IsoPath -ErrorAction Stop
+        Write-Host "ISO desmuntada correctament."
+    } catch {
+        Write-Host "Error en desmuntar l'ISO. Comprova que no hi hagi errors pendents." -ForegroundColor Red
+    }
+}
+
+# Executa el script
+Mount-And-Copy-Simple
