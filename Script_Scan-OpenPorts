@@ -1,0 +1,46 @@
+Function Scan-OpenPorts {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]$TargetIP,                     # IP o host a escanejar
+        [Parameter(Mandatory=$true)]
+        [ValidateSet("TCP", "UDP", "Both")]    # Tipus de ports
+        [string]$Protocol
+    )
+
+    Write-Host "Iniciant escaneig de ports a $TargetIP per protocol $Protocol..." -ForegroundColor Green
+    
+    # Comprovacions i escaneig segons el protocol triat
+    switch ($Protocol) {
+        "TCP" {
+            # Escaneja només ports TCP
+            $Results = Test-NetConnection -ComputerName $TargetIP -Port 80 -InformationLevel Detailed
+            Write-Host "Resultats de TCP:" -ForegroundColor Cyan
+            $Results
+        }
+        "UDP" {
+            # Escaneja només ports UDP
+            Write-Host "Escaneig de ports UDP encara no implementat completament en PowerShell." -ForegroundColor Yellow
+        }
+        "Both" {
+            # Escaneja tant TCP com UDP
+            $TCPResults = Test-NetConnection -ComputerName $TargetIP -Port 80 -InformationLevel Detailed
+            Write-Host "Resultats de TCP:" -ForegroundColor Cyan
+            $TCPResults
+
+            Write-Host "Escaneig de ports UDP encara no implementat completament en PowerShell." -ForegroundColor Yellow
+        }
+    }
+}
+
+# Executa la funció
+do {
+    try {
+        $TargetIP = Read-Host "Introdueix l'IP o host per escanejar"
+        $Protocol = Read-Host "Tria el tipus de protocol (TCP, UDP o Both)"
+        Scan-OpenPorts -TargetIP $TargetIP -Protocol $Protocol
+        $ScanSuccess = $true
+    } catch {
+        Write-Host "Error durant l'escaneig. Comprova l'IP o protocol triat." -ForegroundColor Red
+        $ScanSuccess = $false
+    }
+} while (-not $ScanSuccess)
