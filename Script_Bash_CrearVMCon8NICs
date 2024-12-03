@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# Ruta completa del ejecutable VBoxManage
+VBoxManage="/usr/bin/VBoxManage"
+
+# Función para comprobar si la máquina virtual existe
+check_vm_exists() {
+    VMName=$1
+    VMList=$($VBoxManage list vms)
+    if echo "$VMList" | grep -q "\"$VMName\""; then
+        return 0  # La máquina virtual existe
+    else
+        return 1  # La máquina virtual no existe
+    fi
+}
+
+# Bucle para pedir el nombre de la máquina virtual hasta que sea válido
+while true; do
+    read -p "Introduce el nombre de la máquina virtual: " VMName
+
+    # Verificar si la máquina virtual existe
+    if check_vm_exists "$VMName"; then
+        break
+    else
+        echo "La máquina virtual '$VMName' no existe. Intenta de nuevo."
+    fi
+done
+
+# Encender la máquina virtual
+echo "Encendiendo la máquina virtual '$VMName'..."
+$VBoxManage startvm "$VMName" --type headless
+echo "La máquina virtual '$VMName' ha sido encendida."
+
+# Esperar a que el usuario decida guardar el estado o detener la máquina
+read -p "¿Quieres guardar el estado (1) o detener la máquina (2)? " accion
+
+if [ "$accion" -eq 1 ]; then
+    # Guardar el estado de la máquina virtual
+    echo "Guardando el estado de la máquina virtual '$VMName'..."
+    $VBoxManage controlvm "$VMName" savestate
+    echo "El estado de la máquina virtual '$VMName' ha sido guardado."
+elif [ "$accion" -eq 2 ]; then
+    # Detener la máquina virtual
+    echo "Deteniendo la máquina virtual '$VMName'..."
+    $VBoxManage controlvm "$VMName" poweroff
+    echo "La máquina virtual '$VMName' ha sido detenida."
+else
+    echo "Opción no válida. El script ha finalizado sin acción."
+fi
