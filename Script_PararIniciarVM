@@ -1,0 +1,59 @@
+# Ruta completa del ejecutable VBoxManage
+$VBoxManage = "C:\Program Files\Oracle\VirtualBox\VBoxManage.exe"
+
+# Función para comprobar si la máquina virtual existe
+function Check-VMExists($VMName) {
+    # Obtener la lista de máquinas virtuales
+    $VMList = & $VBoxManage list vms
+    # Eliminar las comillas del nombre de la máquina virtual y verificar si el nombre coincide
+    foreach ($VM in $VMList) {
+        # Extraer el nombre de la máquina sin comillas
+        $VMNameClean = ($VM -split '"')[1]
+        if ($VMNameClean -eq $VMName) {
+            return $true
+        }
+    }
+    return $false
+}
+
+# Bucle para pedir el nombre de la máquina virtual hasta que sea válido
+$VMName = ""
+do {
+    # Pedir al usuario el nombre de la máquina virtual
+    $VMName = Read-Host "Introduce el nombre de la máquina virtual"
+
+    # Verificar si la máquina virtual existe
+    if (-not (Check-VMExists $VMName)) {
+        Write-Host "La máquina virtual '$VMName' no existe. Intenta de nuevo." -ForegroundColor Red
+    }
+} while (-not (Check-VMExists $VMName))
+
+# Intentar encender la máquina virtual
+Write-Host "Intentando encender la máquina virtual '$VMName'..."
+try {
+    # Usamos --type gui para ver la interfaz gráfica de la máquina
+    & $VBoxManage startvm $VMName --type gui
+    Write-Host "La máquina virtual '$VMName' ha sido encendida." -ForegroundColor Green
+}
+catch {
+    Write-Host "Hubo un error al intentar encender la máquina virtual '$VMName': $_" -ForegroundColor Red
+}
+
+# Esperar a que el usuario decida guardar el estado o detener la máquina
+$accion = Read-Host "¿Quieres guardar el estado (1) o detener la máquina (2)?"
+
+if ($accion -eq "1") {
+    # Guardar el estado de la máquina virtual
+    Write-Host "Guardando el estado de la máquina virtual '$VMName'..."
+    & $VBoxManage controlvm $VMName savestate
+    Write-Host "El estado de la máquina virtual '$VMName' ha sido guardado." -ForegroundColor Green
+}
+elseif ($accion -eq "2") {
+    # Detener la máquina virtual
+    Write-Host "Deteniendo la máquina virtual '$VMName'..."
+    & $VBoxManage controlvm $VMName poweroff
+    Write-Host "La máquina virtual '$VMName' ha sido detenida." -ForegroundColor Green
+}
+else {
+    Write-Host "Opción no válida. El script ha finalizado sin acción." -ForegroundColor Red
+}
